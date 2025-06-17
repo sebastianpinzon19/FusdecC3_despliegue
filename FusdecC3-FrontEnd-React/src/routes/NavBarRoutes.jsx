@@ -7,7 +7,7 @@ import Cursos from "../pages/cursos/Cursos";
 import Usuarios from "../pages/usuarios/Usuarios";
 import Ediciones from "../pages/ediciones/Ediciones";
 import MasInformacion from "../pages/masinformacion/MasInformacion";
-import Estudiantes from "../pages/estudiantes/Estudiantes"
+import Estudiantes from "../pages/estudiantes/Estudiantes";
 import Asistencias from "../pages/asistencias/Asistencias";
 import Login from "../pages/login/Login";
 import Auditorias from "../pages/auditorias/Auditorias";
