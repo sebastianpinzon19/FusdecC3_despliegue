@@ -25,11 +25,15 @@ import {
   TablePagination,
   Snackbar,
   Chip,
+  Tooltip,
+  InputAdornment
 } from "@mui/material"
 import SaveIcon from "@mui/icons-material/Save"
 import HistoryIcon from "@mui/icons-material/History"
 import InfoIcon from "@mui/icons-material/Info"
 import Delete from "@mui/icons-material/Delete";
+import SearchIcon from '@mui/icons-material/Search';
+import SearchOffIcon from '@mui/icons-material/SearchOff';
 
 const Asistencias = () => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
@@ -322,186 +326,434 @@ const Asistencias = () => {
       </Paper>
 
       {/* Diálogo de historial */}
-<Dialog open={openHistory} onClose={() => setOpenHistory(false)} maxWidth="md" fullWidth>
-  <DialogTitle sx={{ pb: 1 }}>Historial de Asistencias</DialogTitle>
-  <DialogContent>
-    <TableContainer sx={{ maxHeight: '60vh' }}>
-      <Table stickyHeader size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell width="10%">ID</TableCell>
-            <TableCell width="20%">Fecha</TableCell>
-            <TableCell width="40%">Título</TableCell>
-            <TableCell width="15%" align="center">Estado</TableCell>
-            <TableCell width="15%" align="center">Acciones</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {attendanceHistory
-            .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
-            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            .map((record) => (
-              <TableRow key={record.id} hover>
-                <TableCell>{record.id}</TableCell>
-                <TableCell>
-                  {new Date(record.fecha).toLocaleDateString('es-ES')}
-                </TableCell>
-                <TableCell sx={{ 
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  maxWidth: '300px'
-                }}>
-                  {record.titulo}
-                </TableCell>
-                <TableCell align="center">
-                  <Chip 
-                    label={record.estado ? "Activa" : "Inactiva"} 
-                    color={record.estado ? "success" : "error"} 
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell align="center" sx={{ p: 1 }}>
-                  <IconButton
-                    onClick={async () => {
-                      setCurrentAttendanceInfo(record);
-                      await fetchStudentsForAttendance(record.id);
-                      setOpenStudentsDialog(true);
-                    }}
-                    size="small"
-                    color="info"
-                  >
-                    <InfoIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => handleOpenDeleteDialog(record)}
-                    size="small"
-                    color="error"
-                    sx={{ ml: 0.5 }}
-                  >
-                    <Delete fontSize="small" />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-    <TablePagination
-        id="paginationAsistice"
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={attendanceHistory.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={(_, newPage) => setPage(newPage)}
-        onRowsPerPageChange={(e) => {
-          setRowsPerPage(parseInt(e.target.value, 10));
-          setPage(0);
-        }}
-        labelRowsPerPage="Registros por página:"
-        labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
+      <Dialog 
+        open={openHistory} 
+        onClose={() => setOpenHistory(false)} 
+        maxWidth="md" 
+        fullWidth
         sx={{
-          '.MuiTablePagination-toolbar': {
-            minHeight: 'auto',
-            padding: '8px 0'
+          '& .MuiPaper-root': {
+            borderRadius: '12px'
           }
         }}
-      />
-    </DialogContent>
-    <DialogActions sx={{ p: 2 }}>
-      <Button 
-        onClick={() => setOpenHistory(false)} 
-        variant="outlined"
-        size="small"
       >
-        Cerrar
-      </Button>
-    </DialogActions>
-  </Dialog>
+        <DialogTitle sx={{ 
+          backgroundColor: '#1d526eff', 
+          color: '#fff', 
+          textAlign: 'center',
+          padding: '16px 24px',
+          fontSize: '1.25rem',
+          fontWeight: '500'
+        }}>
+          Historial de Asistencias
+        </DialogTitle>
+
+        <DialogContent sx={{ 
+          padding: '20px',
+          '&.MuiDialogContent-root': {
+            paddingTop: '24px'
+          }
+        }}>
+          <TableContainer 
+            component={Paper}
+            elevation={3}
+            sx={{ 
+              maxHeight: '60vh',
+              borderRadius: '12px',
+              border: '1px solid rgba(0, 0, 0, 0.12)'
+            }}
+          >
+            <Table stickyHeader size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell width="10%" sx={{ 
+                    fontWeight: '600', 
+                    backgroundColor: '#f5f5f5'
+                  }}>ID</TableCell>
+                  <TableCell width="20%" sx={{ 
+                    fontWeight: '600', 
+                    backgroundColor: '#f5f5f5'
+                  }}>Fecha</TableCell>
+                  <TableCell width="40%" sx={{ 
+                    fontWeight: '600', 
+                    backgroundColor: '#f5f5f5'
+                  }}>Título</TableCell>
+                  <TableCell width="15%" align="center" sx={{ 
+                    fontWeight: '600', 
+                    backgroundColor: '#f5f5f5'
+                  }}>Acciones</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {attendanceHistory
+                  .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((record) => (
+                    <TableRow 
+                      key={record.id} 
+                      hover
+                      sx={{ 
+                        '&:nth-of-type(even)': {
+                          backgroundColor: 'rgba(0, 0, 0, 0.02)'
+                        }
+                      }}
+                    >
+                      <TableCell>{record.id}</TableCell>
+                      <TableCell>
+                        {new Date(record.fecha).toLocaleDateString('es-ES', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric'
+                        })}
+                      </TableCell>
+                      <TableCell sx={{ 
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        maxWidth: '300px'
+                      }}>
+                        {record.titulo}
+                      </TableCell>
+                      <TableCell align="center" sx={{ p: 1 }}>
+                        <Tooltip title="Ver detalles">
+                          <IconButton
+                            onClick={async () => {
+                              setCurrentAttendanceInfo(record);
+                              await fetchStudentsForAttendance(record.id);
+                              setOpenStudentsDialog(true);
+                            }}
+                            size="small"
+                            color="primary"
+                            sx={{
+                              '&:hover': {
+                                backgroundColor: 'rgba(29, 82, 110, 0.08)'
+                              }
+                            }}
+                          >
+                            <InfoIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Eliminar registro">
+                          <IconButton
+                            onClick={() => handleOpenDeleteDialog(record)}
+                            size="small"
+                            color="error"
+                            sx={{ 
+                              ml: 0.5,
+                              '&:hover': {
+                                backgroundColor: 'rgba(211, 47, 47, 0.08)'
+                              }
+                            }}
+                          >
+                            <Delete fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          <TablePagination
+            id="paginationAsistice"
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={attendanceHistory.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={(_, newPage) => setPage(newPage)}
+            onRowsPerPageChange={(e) => {
+              setRowsPerPage(parseInt(e.target.value, 10));
+              setPage(0);
+            }}
+            labelRowsPerPage="Registros por página:"
+            labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
+            sx={{
+              mt: 2,
+              '.MuiTablePagination-toolbar': {
+                minHeight: 'auto',
+                padding: '8px 0',
+                flexWrap: 'wrap',
+                justifyContent: 'center'
+              },
+              '.MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows': {
+                marginBottom: '8px'
+              }
+            }}
+          />
+        </DialogContent>
+
+        <DialogActions sx={{ 
+          padding: '16px 24px',
+          borderTop: '1px solid rgba(0, 0, 0, 0.12)'
+        }}>
+          <Button 
+            onClick={() => setOpenHistory(false)} 
+            variant="contained"
+            color="primary"
+            sx={{
+              textTransform: 'none',
+              fontWeight: '600',
+              padding: '8px 20px',
+              borderRadius: '8px',
+              minWidth: '100px'
+            }}
+          >
+            Cerrar
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Diálogo de estudiantes de la asistencia */}
       <Dialog
-  open={openStudentsDialog}
-  onClose={() => {
-    setOpenStudentsDialog(false);
-    setSearchStudentTerm(""); // Limpiar búsqueda al cerrar
-  }}
-  maxWidth="md"
-  fullWidth
->
-  <DialogTitle>
-    Estudiantes en la asistencia del{" "}
-    {currentAttendanceInfo &&
-      new Date(currentAttendanceInfo.fecha).toLocaleDateString()}
-  </DialogTitle>
-  <DialogContent>
-    {/* Campo de búsqueda */}
-    <TextField
-      id="inputIdentificacionAsistenciaValidacion"
-      label="Buscar estudiante por nombre o documento"
-      variant="outlined"
-      fullWidth
-      margin="normal"
-      value={searchStudentTerm}
-      onChange={(e) => setSearchStudentTerm(e.target.value)}
-    />
+        open={openStudentsDialog}
+        onClose={() => {
+          setOpenStudentsDialog(false);
+          setSearchStudentTerm("");
+        }}
+        maxWidth="md"
+        fullWidth
+        sx={{
+          '& .MuiPaper-root': {
+            borderRadius: '12px'
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          backgroundColor: '#1d526eff', 
+          color: '#fff', 
+          textAlign: 'center',
+          padding: '16px 24px',
+          fontSize: '1.25rem',
+          fontWeight: '500'
+        }}>
+          Estudiantes en la asistencia del {currentAttendanceInfo && 
+            new Date(currentAttendanceInfo.fecha).toLocaleDateString('es-ES', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric'
+            })
+          }
+        </DialogTitle>
 
-    {/* Tabla de estudiantes filtrados */}
-    <TableContainer>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>Tipo Documento</TableCell>
-            <TableCell>Documento</TableCell>
-            <TableCell>Nombre</TableCell>
-            <TableCell>Apellido</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {filteredStudentsForDialog.length > 0 ? (
-            filteredStudentsForDialog.map((student) => (
-              <TableRow key={student.numeroDocumento}>
-                <TableCell>{student.tipoDocumento}</TableCell>
-                <TableCell>{student.numeroDocumento}</TableCell>
-                <TableCell>{student.nombre}</TableCell>
-                <TableCell>{student.apellido}</TableCell>
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={4} align="center">
-                No se encontraron estudiantes
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  </DialogContent>
-  <DialogActions>
-    <Button onClick={() => setOpenStudentsDialog(false)}>Cerrar</Button>
-  </DialogActions>
-</Dialog>
+        <DialogContent sx={{ 
+          padding: '20px',
+          '&.MuiDialogContent-root': {
+            paddingTop: '24px'
+          }
+        }}>
+          {/* Campo de búsqueda mejorado */}
+          <TextField
+            id="inputIdentificacionAsistenciaValidacion"
+            label="Buscar estudiante por nombre o documento"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={searchStudentTerm}
+            onChange={(e) => setSearchStudentTerm(e.target.value)}
+            sx={{
+              mb: 3,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '8px'
+              }
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon color="action" />
+                </InputAdornment>
+              )
+            }}
+          />
+
+          {/* Tabla de estudiantes con mejor estilo */}
+          <TableContainer component={Paper} elevation={3} sx={{
+            borderRadius: '12px',
+            border: '1px solid rgba(0, 0, 0, 0.12)',
+            maxHeight: '400px',
+            overflow: 'auto'
+          }}>
+            <Table size="small" stickyHeader>
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ 
+                    fontWeight: '600', 
+                    backgroundColor: '#f5f5f5'
+                  }}>Tipo Documento</TableCell>
+                  <TableCell sx={{ 
+                    fontWeight: '600', 
+                    backgroundColor: '#f5f5f5'
+                  }}>Documento</TableCell>
+                  <TableCell sx={{ 
+                    fontWeight: '600', 
+                    backgroundColor: '#f5f5f5'
+                  }}>Nombre</TableCell>
+                  <TableCell sx={{ 
+                    fontWeight: '600', 
+                    backgroundColor: '#f5f5f5'
+                  }}>Apellido</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredStudentsForDialog.length > 0 ? (
+                  filteredStudentsForDialog.map((student) => (
+                    <TableRow 
+                      key={student.numeroDocumento}
+                      hover
+                      sx={{ 
+                        '&:nth-of-type(even)': {
+                          backgroundColor: 'rgba(0, 0, 0, 0.02)'
+                        },
+                        '&:last-child td': {
+                          borderBottom: 0
+                        }
+                      }}
+                    >
+                      <TableCell>{student.tipoDocumento}</TableCell>
+                      <TableCell sx={{ fontFamily: 'monospace' }}>
+                        {student.numeroDocumento}
+                      </TableCell>
+                      <TableCell>{student.nombre}</TableCell>
+                      <TableCell>{student.apellido}</TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={4} align="center" sx={{ py: 4 }}>
+                      <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        color: 'text.secondary'
+                      }}>
+                        <SearchOffIcon sx={{ fontSize: 40, mb: 1 }} />
+                        <Typography variant="body1">
+                          No se encontraron estudiantes
+                        </Typography>
+                        <Typography variant="body2" sx={{ mt: 1 }}>
+                          Intenta con otro término de búsqueda
+                        </Typography>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </DialogContent>
+
+        <DialogActions sx={{ 
+          padding: '16px 24px',
+          borderTop: '1px solid rgba(0, 0, 0, 0.12)'
+        }}>
+          <Button 
+            onClick={() => {
+              setOpenStudentsDialog(false);
+              setSearchStudentTerm("");
+            }}
+            variant="contained" 
+            color="primary"
+            sx={{
+              textTransform: 'none',
+              fontWeight: '600',
+              padding: '8px 20px',
+              borderRadius: '8px'
+            }}
+          >
+            Cerrar
+          </Button>
+        </DialogActions>
+      </Dialog>
 
 
 
 
-      <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
-        <DialogTitle>Eliminar Asistencia</DialogTitle>
-        <DialogContent>
-          <Typography>
-            ¿Estás seguro de que deseas eliminar la asistencia del día {attendanceToDelete && new Date(attendanceToDelete.fecha).toLocaleDateString()}?
+      <Dialog
+        open={openDeleteDialog}
+        onClose={handleCloseDeleteDialog}
+        maxWidth="sm"
+        fullWidth
+        sx={{
+          '& .MuiPaper-root': {
+            borderRadius: '12px'
+          }
+        }}
+      >
+        <DialogTitle sx={{
+          backgroundColor: '#1d526eff',
+          color: '#fff',
+          textAlign: 'center',
+          padding: '16px 24px',
+          fontSize: '1.25rem',
+          fontWeight: '500'
+        }}>
+          Confirmar Eliminación
+        </DialogTitle>
+        
+        <DialogContent dividers sx={{ 
+          padding: '20px',
+          textAlign: 'center'
+        }}>
+          <Typography variant="body1" sx={{ 
+            fontSize: '1.1rem',
+            mb: 1
+          }}>
+            ¿Estás seguro que deseas eliminar la asistencia del día {' '}
+            <strong>
+              {attendanceToDelete && new Date(attendanceToDelete.fecha).toLocaleDateString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+              })}
+            </strong>?
           </Typography>
-          <Typography variant="body2" color="text.secondary" mt={2}>
+          
+          <Typography variant="body2" sx={{
+            color: 'text.secondary',
+            fontStyle: 'italic'
+          }}>
             Título: {attendanceToDelete?.titulo}
           </Typography>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDeleteDialog} color="primary">
+        
+        <DialogActions sx={{
+          justifyContent: 'center',
+          padding: '16px 24px',
+          borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+          gap: '16px'
+        }}>
+          <Button
+            onClick={handleCloseDeleteDialog}
+            variant="outlined"
+            sx={{
+              minWidth: '120px',
+              borderColor: '#1d526eff',
+              color: '#1d526eff',
+              borderRadius: '8px',
+              fontWeight: '600',
+              '&:hover': {
+                backgroundColor: '#f0f7ff',
+                borderColor: '#1a4863'
+              }
+            }}
+          >
             Cancelar
           </Button>
-          <Button onClick={handleDeleteAttendance} color="error" variant="contained">
+          
+          <Button
+            onClick={handleDeleteAttendance}
+            variant="contained"
+            sx={{
+              minWidth: '120px',
+              backgroundColor: '#d32f2f',
+              borderRadius: '8px',
+              fontWeight: '600',
+              '&:hover': {
+                backgroundColor: '#b71c1c'
+              }
+            }}
+          >
             Eliminar
           </Button>
         </DialogActions>

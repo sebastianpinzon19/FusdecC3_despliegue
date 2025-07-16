@@ -462,7 +462,7 @@ const Unidades = () => {
         <h1>Gestión de Unidades</h1>
         <div className="header-actions">
           <button className="add-button" onClick={handleAddUnidad} id='btnAgregarUnidad'>
-            <i className="fas fa-plus"></i> Agregar Unidad
+            <i className="fas fa-plus" color='#f4f4f4'></i> Agregar Unidad
           </button>
           <button className="stats-button" onClick={() => setShowStats(!showStats)}>
             <i className="fas fa-chart-pie"></i> {showStats ? 'Ocultar Estadísticas' : 'Mostrar Estadísticas'}
@@ -494,7 +494,7 @@ const Unidades = () => {
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h2>{selectedUnidad ? 'Editar Unidad' : 'Nueva Unidad'}</h2>
+              <h2 style={{ color: '#f4f4f4' }}>{selectedUnidad ? 'Editar Unidad' : 'Nueva Unidad'}</h2>
               <button
                 className="close-button"
                 onClick={() => setShowForm(false)}
@@ -664,22 +664,33 @@ const Unidades = () => {
                       >
                         <div className="unit-header">
                           <h3>{unidad.nombreUnidad}</h3>
-                          <span className={`status-badge ${unidad.estadoUnidad ? 'active' : 'inactive'}`}>
-                            {unidad.estadoUnidad ? 'Activo' : 'Inactivo'}
-                          </span>
                         </div>
                         <p className="unit-brigada">
                           <i className="fas fa-flag"></i>
                           {unidad.brigadaNombre || 'Sin brigada asignada'}
                         </p>
                         <div className="unit-actions">
-                          <button onClick={(e) => { e.stopPropagation(); handleEdit(unidad); }} className="edit-button">
-                            <i className="fas fa-edit"></i> Editar
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); handleEdit(unidad); }} 
+                            className="edit-button"
+                          >
+                            <i className="fas fa-edit white-icon"></i> Editar
                           </button>
                           <button
-                            onClick={(e) => { e.stopPropagation(); handleDelete(unidad.id); }} className="delete-button"
+                            onClick={(e) => { e.stopPropagation(); handleDelete(unidad.id); }}
+                            style={{
+                              backgroundColor: '#d32f2f',
+                              color: 'white',
+                              border: 'none',
+                              padding: '8px 12px',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px'
+                            }}
                           >
-                            <i className="fas fa-trash-alt"></i> Eliminar
+                            <i className="fas fa-trash-alt" style={{ color: 'white' }}></i> Eliminar
                           </button>
                         </div>
                       </div>

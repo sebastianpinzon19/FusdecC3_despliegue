@@ -468,18 +468,42 @@ const Brigadas = () => {
                       >
                         <div className="brigade-header">
                           <h3>{brigade.nombreBrigada}</h3>
-                          <span className={`status-badge ${brigade.estadoBrigada ? 'active' : 'inactive'}`}>
-                            {brigade.estadoBrigada ? 'Activo' : 'Inactivo'}
-                          </span>
                         </div>
                         <p><i className="fas fa-map-marker-alt"></i> {brigade.ubicacionBrigada}</p>
                         <p><i className="fas fa-flag"></i> {brigade.comandoNombre || 'Sin comando asignado'}</p>
                         <div className="brigade-actions">
-                          <button onClick={(e) => { e.stopPropagation(); handleEdit(brigade); }} className="edit-button">
-                            <i className="fas fa-edit"></i> Editar
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); handleEdit(unidad); }} 
+                            className="edit-button"
+                            style={{
+                              backgroundColor: '#1d526eff',
+                              color: 'white',
+                              border: 'none',
+                              padding: '8px 12px',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px'
+                            }}
+                          >
+                            <i className="fas fa-edit" style={{ color: 'white' }}></i> Editar
                           </button>
-                          <button onClick={(e) => { e.stopPropagation(); handleDeleteClick(brigade.id); }} className="delete-button">
-                            <i className="fas fa-trash-alt"></i> Eliminar
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleDelete(unidad.id); }}
+                            style={{
+                              backgroundColor: '#d32f2f',
+                              color: 'white',
+                              border: 'none',
+                              padding: '8px 12px',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px'
+                            }}
+                          >
+                            <i className="fas fa-trash-alt" style={{ color: 'white' }}></i> Eliminar
                           </button>
                         </div>
                       </div>
